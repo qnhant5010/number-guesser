@@ -144,7 +144,7 @@ const validateGuess = (inputString: string, requiredLength: number): GuessValida
   for (let charIdx = 0; charIdx < chars.length; charIdx++) {
     const char = chars[charIdx] as Digit;
     if (!DIGIT_ALPHABET.has(char)) unknownDigit = true;
-    if (existingDigits.has(char)) duplicateDigit = true;
+    if (existingDigits.has(char)) duplicateDigit = true; else existingDigits.add(char);
     if (unknownDigit && duplicateDigit) break; // No need to check anymore
   }
   return { incorrectLength, unknownDigit, duplicateDigit };
