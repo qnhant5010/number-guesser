@@ -128,14 +128,18 @@ const GuessInput = (props: {
     <div id="guessing">
       <input placeholder="Enter a valid value" maxLength={props.requiredLength} type="text" id="guess" value={currentGuess} onChange={e => setCurrentGuess(e.target.value)} />
       <ol>
-        <li key={"exceedLength"}>The length must be exactly {props.requiredLength} : {validation.incorrectLength ? "NOK" : "OK"}</li>
-        <li key={"unknownDigit"}>Only digits from <b>0</b> to <b>9</b> : {validation.unknownDigit ? "NOK" : "OK"}</li>
-        <li key={"duplicateDigit"}>Every digit ought to be different : {validation.duplicateDigit ? "NOK" : "OK"}</li>
+        <li key={"exceedLength"}>The length must be exactly {props.requiredLength} : <ConditionDisplayer value={!validation.incorrectLength} /></li>
+        <li key={"unknownDigit"}>Only digits from <b>0</b> to <b>9</b> : <ConditionDisplayer value={!validation.unknownDigit} /></li>
+        <li key={"duplicateDigit"}>Every digit ought to be different : <ConditionDisplayer value={!validation.duplicateDigit} /></li>
       </ol>
       <button disabled={!isValidGuess(validation)} onClick={() => { props.onSubmit(currentGuess.split("") as Digit[]); setCurrentGuess("") }}>Try</button>
     </div>
   )
 }
+
+const ConditionDisplayer = (props: {
+  value: boolean
+}) => props.value ? <span className="condition ok">&#10003;</span> : <span className="condition nok">&#10060;</span>;
 
 const TurnHistoryDisplayer = (props: {
   turnHistory: Turn[]

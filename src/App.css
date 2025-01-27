@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .logo {
@@ -43,4 +44,18 @@
 
 table, th, td {
   border: 1px solid;
+}
+
+input#guess {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: x-large;
+  text-align: center;
+}
+
+span.condition.nok {
+  color: red;
+}
+
+span.condition.ok {
+  color: green;
 }
