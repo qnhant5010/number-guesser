@@ -4,17 +4,17 @@ import { shuffleInPlace } from './Utils';
 
 function App() {
   const [target, setTarget] = useState<Digit[]>();
-  console.log("Secret!!! Target=%s", target?.join(" "));
+  if (target) console.log("Secret!!! Target=%s", target.join(" "));
   return (
     <>
-      <h1>Number guessing game</h1>
+      <h1>Number guesser game</h1>
       <div>
         <button onClick={() => setTarget(generateTarget(4))}>New game</button>
       </div>
       {
         !!target &&
         <div className="card">
-          <GuessingGame target={target} key={target.join("")}/>
+          <GuessingGame target={target} key={target.join("")} />
         </div>
       }
     </>
@@ -71,43 +71,8 @@ const GuessingGame = (props: {
 
   return (
     <div>
-      <div id="turn-history">
-        <table style={{
-          width: "100%"
-        }}>
-          <thead>
-            <tr>
-              <th>
-                Your guesses
-              </th>
-              <th>
-                Correct
-              </th>
-              <th>
-                Misplaced
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              turnHistory.map((t, idx) => (
-                <tr key={idx}>
-                  <td key={"guess"}>
-                    {t.guess.value.join(" ")}
-                  </td>
-                  <td key={"right-placed"}>
-                    {t.result.digitsRightPlaced}
-                  </td>
-                  <td key={"misplaced"}>
-                    {t.result.digitsMisplaced}
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-      </div>
-      <br/>
+      <TurnHistoryDisplayer turnHistory={turnHistory} />
+      <br />
       {
         gameResult === "W" ? <h1>YOU WIN!</h1>
           : <GuessInput requiredLength={props.target.length} onSubmit={onSubmitGuess} />
@@ -171,3 +136,42 @@ const GuessInput = (props: {
     </div>
   )
 }
+
+const TurnHistoryDisplayer = (props: {
+  turnHistory: Turn[]
+}) => {
+  return <div id="turn-history">
+    <table style={{
+      width: "100%"
+    }}>
+      <thead>
+        <tr>
+          <th>
+            Your guesses
+          </th>
+          <th>
+            In place
+          </th>
+          <th>
+            Misplaced
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {props.turnHistory.map((t, idx) => (
+          <tr key={idx}>
+            <td key={"guess"}>
+              {t.guess.value.join(" ")}
+            </td>
+            <td key={"right-placed"}>
+              {t.result.digitsRightPlaced}
+            </td>
+            <td key={"misplaced"}>
+              {t.result.digitsMisplaced}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>;
+};
