@@ -2,20 +2,49 @@ import { useMemo, useState } from 'react';
 import './App.css';
 import { shuffleInPlace } from './Utils';
 
+const TARGET_DIGITS_LIMIT = 4;
+const TARGET_TURN_LIMIT = 7;
+
 function App() {
-  const [target, setTarget] = useState<Digit[]>();
-  if (target) console.log("Secret!!! Target=%s", target.join(" "));
+  const [gameMode, setGameMode] = useState<"MAN_PC" | "BOT_PC">();
   return (
     <>
       <h1>Number guesser game</h1>
+      <p>Can you find a number of {TARGET_DIGITS_LIMIT} distinct digits in no more than {TARGET_TURN_LIMIT} turns ?</p>
       <div>
-        <button onClick={() => setTarget(generateTarget(4))}>New game</button>
+        <table style={{
+          width: "100%"
+        }}>
+          <tbody>
+            <tr>
+              <td>
+                <button onClick={() => setGameMode("MAN_PC")}>Man VS Machine</button>
+              </td>
+              <td>
+                Find the machine's number
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button onClick={() => setGameMode("BOT_PC")}>Bot VS Machine</button>
+              </td>
+              <td>
+                Create a bot to find the machine's number
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       {
-        !!target &&
+        gameMode === "MAN_PC" &&
         <div className="card">
-          <GuessingGame target={target} key={target.join("")} />
+          <GameOfMan target={generateTarget(TARGET_DIGITS_LIMIT)} key="MAN_PC" />
         </div>
+        || gameMode === "BOT_PC" &&
+        <div className="card">
+          <GameOfBot key="BOT_PC" />
+        </div>
+        || <h3>Please select a game mode</h3>
       }
     </>
   )
@@ -51,7 +80,7 @@ type Turn = {
 
 type GameResult = "W" | "L";
 
-const GuessingGame = (props: {
+const GameOfMan = (props: {
   target: Digit[]
 }) => {
   const [turnHistory, setTurnHistory] = useState<Turn[]>([]);
@@ -179,3 +208,9 @@ const TurnHistoryDisplayer = (props: {
     </table>
   </div>;
 };
+
+const GameOfBot = () => {
+  return <div>
+    TODO
+  </div>
+}
