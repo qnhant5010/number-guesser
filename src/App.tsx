@@ -145,7 +145,7 @@ const TurnHistoryDisplayer = (props: {
   turnHistory: Turn[]
 }) => {
   return <div id="turn-history">
-    <table style={{
+    <table className="turn-history-table" style={{
       width: "100%"
     }}>
       <thead>
