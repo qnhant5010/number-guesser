@@ -10,6 +10,7 @@ function App() {
   return (
     <>
       <h1>Number guesser game</h1>
+      <p style={{fontSize: "smaller"}}>Open-sourced at: <a>https://github.com/qnhant5010/number-guesser</a></p>
       <p>Can you find a number of {TARGET_DIGITS_LIMIT} distinct digits in no more than {TARGET_TURN_LIMIT} turns ?</p>
       <div>
         <table style={{
