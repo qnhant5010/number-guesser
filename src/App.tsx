@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import { shuffleInPlace } from './Utils';
 
@@ -38,7 +38,7 @@ function App() {
       {
         gameMode === "MAN_PC" &&
         <div className="card">
-          <GameOfMan target={generateTarget(TARGET_DIGITS_LIMIT)} key="MAN_PC" />
+          <GameOfMan key="MAN_PC" />
         </div>
         || gameMode === "BOT_PC" &&
         <div className="card">
@@ -80,23 +80,33 @@ type Turn = {
 
 type GameResult = "W" | "L";
 
-const GameOfMan = (props: {
-  target: Digit[]
-}) => {
+const GameOfMan = () => {
+  const [target, setTarget] = useState(() => generateTarget(TARGET_DIGITS_LIMIT));
   const [turnHistory, setTurnHistory] = useState<Turn[]>([]);
-  const [gameResult, setGameResult] = useState<GameResult>();
+  const [gameResult, setGameResult] = useState<GameResult | null>(null);
 
-  const onSubmitGuess = useMemo(() => (guess: Digit[]) => {
-    const turnResult = evaluateGuess(guess, props.target);
+  useEffect(() => {
+    console.groupCollapsed("SECRET !!!");
+    console.log("TARGET = %s", target.join(" "));
+    console.groupEnd();
+  }, [target]);
+
+  const onSubmitGuess = useCallback((guess: Digit[]) => {
+    const turnResult = evaluateGuess(guess, target);
     setTurnHistory(turnHistory => turnHistory.concat({
       guess: {
         value: guess
       },
       result: turnResult
     }))
-    if (isWinner(props.target, turnResult))
-      setGameResult("W");
-  }, [props.target]);
+    if (isWinner(target, turnResult)) setGameResult("W");
+  }, [target]);
+
+  const onRestartGame = useCallback(() => {
+    setTarget(generateTarget(TARGET_DIGITS_LIMIT));
+    setTurnHistory([]);
+    setGameResult(null);
+  }, [setTarget]);
 
   return (
     <div>
@@ -104,8 +114,14 @@ const GameOfMan = (props: {
       <br />
       {
         gameResult === "W" ? <h1>YOU WIN!</h1>
-          : <GuessInput requiredLength={props.target.length} onSubmit={onSubmitGuess} />
+          : isLoser(turnHistory) ? <p>
+            <h1>YOU LOSE!</h1>
+            <span>Answer = <b>{target.join(" ")}</b></span>
+          </p>
+            : <GuessInput requiredLength={target.length} onSubmit={onSubmitGuess} />
       }
+      <br />
+      <button onClick={onRestartGame}>New game</button>
     </div>
   )
 }
@@ -118,7 +134,13 @@ const evaluateGuess = (guess: Digit[], target: Digit[]): TurnResult => {
   }
 }
 
+
 const isWinner = (target: Digit[], result: TurnResult): boolean => result.digitsRightPlaced === target.length && result.digitsMisplaced === 0;
+
+/**
+ * Should only be called after checking is not winner
+ */
+const isLoser = (turnHistory: Turn[]) => turnHistory.length >= TARGET_TURN_LIMIT;
 
 type GuessValidation = {
   incorrectLength: boolean,
@@ -180,6 +202,9 @@ const TurnHistoryDisplayer = (props: {
       <thead>
         <tr>
           <th>
+            N°
+          </th>
+          <th>
             Your guesses
           </th>
           <th>
@@ -193,6 +218,9 @@ const TurnHistoryDisplayer = (props: {
       <tbody>
         {props.turnHistory.map((t, idx) => (
           <tr key={idx}>
+            <td key={"turn-id"}>
+              {idx + 1}
+            </td>
             <td key={"guess"}>
               {t.guess.value.join(" ")}
             </td>
